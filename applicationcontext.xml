@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<bean id="testSortingImpl"
+		class="com.companyname.sortdirproject.sortingFileProjectAssign.TestSortingImpl">	
+		<property name="iSortingService" ref="iSortingServiceID" />
+	</bean>	
+	<bean id="iSortingServiceID"
+		class="com.companyname.sortdirproject.sorting.SortingServiceImpl">
+		<property name="iReadSourceFactory" ref="iReadSourceFactoryID" />
+		<property name="iBuildDataFormatFactory" ref="iBuildDataFormatFactoryID" />
+	</bean>
+	<bean id="iReadSourceFactoryID"
+		class="com.companyname.sortdirproject.common.readSourceStructures.ReadSourceFactoryImpl">		
+	</bean>	
+	<bean id="iBuildDataFormatFactoryID"
+		class="com.companyname.sortdirproject.common.builddataformat.BuildDataFormatFactoryImpl">		
+	</bean>
+	<!-- reading properties -->
+	<bean id="placeholderConfigMM"
+		class="com.companyname.sortdirproject.common.initialization.PropertyInitializationImpl">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- cross cutting concerns, logging before entering & after method -->
+	<bean id="doLogAroundMethodBean"
+		class="com.companyname.sortdirproject.aop.LogAroundMethod" />
+		
+	<bean id="testSortingImplProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="testSortingImpl" />        
+        <property name="interceptorNames">
+            <list>
+                <value>doLogAroundMethodBean</value>
+            </list>
+        </property>
+	</bean>
+
+	<!-- bean id="doAfterThrowingExceptionMethodBean"
+		class="com.companyname.sortdirproject.aop.DoAfterThrowingExceptionMethod" />
+		
+	<bean id="testSortingImplProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="testSortingImpl" />        
+        <property name="interceptorNames">
+            <list>
+                <value>doAfterThrowingExceptionMethodBean</value>
+            </list>
+        </property>
+	</bean-->
+	
+
+	<!-- With aspectJ, cross cutting concerns, exception throwing -->
+	<!-- <bean id="loggingAspect" class="com.companyname.sortdirproject.aop.LoggingExceptionAspect"/> 
+		<aop:aspectj-autoproxy/> <aop:config proxy-target-class="true"> <aop:aspect 
+		ref="loggingAspect"> <aop:pointcut id="logPointCut" expression="execution(public 
+		* *(..))" /> <aop:after-throwing throwing="nullPointEx" pointcut-ref="logPointCut" 
+		method="log" /> </aop:aspect> </aop:config> -->
+</beans>
